@@ -1,0 +1,32 @@
+class reg_access_sequence extends uvm_sequence#(bus_transaction);//读写sequence
+  string rID=get_type_name();
+  
+  bit[15:0] addr;
+  bit[15:0] rdata;
+  bit [15:0] wdata;
+  bit        is_wr;
+  
+  virtual task body();
+    bus_transaction tr;
+    tr=new("tr");
+    tr.addr=this.addr;
+    tr.wr_data=this.wdata;
+    tr.bus_op=(is_wr?BUS_WR:BUS_RD);
+    `uvm_info(tID,$sformatf("begin to access register:is_wr=%0d,addr=%0h",is_wr,addr),UVM_MEDIUM)
+    this.rdata=tr.rd_data;
+  endtask
+endclass
+
+task my_model::main_phase(uvm_phase phase);
+  reg_access_sequence reg_seq;
+  super.main_phase(phase);
+  reg_seq=new("reg_seq");
+  reg_seq.addr=16'h9;
+  reg_seq.is_wr=0;
+  reg_seq.start(p_sqr);
+  while(l)begin
+    if(reg_seq.rdata)
+      invert_tr(new_tr);
+    ap.write(new_tr);
+  end
+endtask
