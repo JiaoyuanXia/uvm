@@ -1,0 +1,12 @@
+class case0_cfg_vseq extends uvm_sequence;
+
+  virtual task body();
+  
+    uvm_reg_mem_hdl_paths_seq ckseq;
+    
+    ckseq=new("ckseq");
+    ckseq.model=p_sequencer.p_rm;
+    ckseq.start(null);
+    
+  endtask
+endclass
